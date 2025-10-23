@@ -18,7 +18,7 @@ A decentralized token swap protocol built on the SUI blockchain, implementing an
 ## Installation
 1. **Clone Repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/LittleKai29/swapMarketPlace
    cd swapMarketPlace
    ```
 2. **Check Move.toml**:
