@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUI Token Swap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    import React, { useState, useEffect } from 'https://cdn.jsdelivr.net/npm/react@18.2.0/+esm';
+    import ReactDOM from 'https://cdn.jsdelivr.net/npm/react-dom@18.2.0/+esm';
+    import { getFullnodeUrl, SuiClient } from 'https://cdn.jsdelivr.net/npm/@mysten/sui.js@0.52.1/+esm';
+    import { SuiKit } from './sdk.js';
+
+    const App = () => {
+      const [account, setAccount] = useState(null);
+      const [suiKit, setSuiKit] = useState(null);
+      const [amountA, setAmountA] = useState('');
+      const [amountB, setAmountB] = useState('');
+      const [liquidityAmount, setLiquidityAmount] = useState('');
+      const [minAmountOut, setMinAmountOut] = useState('');
+
+      useEffect(() => {
+        const client = new SuiClient({ url: getFullnodeUrl('testnet') });
+        const suiKitInstance = new SuiKit(client);
+        setSuiKit(suiKitInstance);
+      }, []);
+
+      const connectWallet = async () => {
+        try {
+          const accounts = await window.suiWallet.requestPermissions();
+          setAccount(accounts[0]);
+          alert('Wallet connected: ' + accounts[0]);
+        } catch (error) {
+          console.error('Failed to connect wallet:', error);
+          alert('Failed to connect wallet');
+        }
+      };
+
+      const createPool = async () => {
+        try {
+          await suiKit.createPool();
+          alert('Pool created successfully!');
+        } catch (error) {
+          console.error('Error creating pool:', error);
+          alert('Error creating pool');
+        }
+      };
+
+      const addLiquidity = async () => {
+        try {
+          await suiKit.addLiquidity(amountA, amountB);
+          alert('Liquidity added successfully!');
+        } catch (error) {
+          console.error('Error adding liquidity:', error);
+          alert('Error adding liquidity');
+        }
+      };
+
+      const removeLiquidity = async () => {
+        try {
+          await suiKit.removeLiquidity(liquidityAmount);
+          alert('Liquidity removed successfully!');
+        } catch (error) {
+          console.error('Error removing liquidity:', error);
+          alert('Error removing liquidity');
+        }
+      };
+
+      const swapAToB = async () => {
+        try {
+          await suiKit.swapAToB(amountA, minAmountOut);
+          alert('Swap A to B successful!');
+        } catch (error) {
+          console.error('Error swapping A to B:', error);
+          alert('Error swapping A to B');
+        }
+      };
+
+      const swapBToA = async () => {
+        try {
+          await suiKit.swapBToA(amountB, minAmountOut);
+          alert('Swap B to A successful!');
+        } catch (error) {
+          console.error('Error swapping B to A:', error);
+          alert('Error swapping B to A');
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+          <h1 className="text-3xl font-bold mb-4">SUI Token Swap</h1>
+          {!account ? (
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              onClick={connectWallet}
+            >
+              Connect SUI Wallet
+            </button>
+          ) : (
+            <div className="w-full max-w-md space-y-4">
+              <p className="text-lg">Connected: {account}</p>
+              <div className="space-y-2">
+                <button
+                  className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  onClick={createPool}
+                >
+                  Create Pool
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  placeholder="Amount A"
+                  value={amountA}
+                  onChange={(e) => setAmountA(e.target.value)}
+                />
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  placeholder="Amount B"
+                  value={amountB}
+                  onChange={(e) => setAmountB(e.target.value)}
+                />
+                <button
+                  className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  onClick={addLiquidity}
+                >
+                  Add Liquidity
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  placeholder="Liquidity Amount"
+                  value={liquidityAmount}
+                  onChange={(e) => setLiquidityAmount(e.target.value)}
+                />
+                <button
+                  className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  onClick={removeLiquidity}
+                >
+                  Remove Liquidity
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  placeholder="Amount A to Swap"
+                  value={amountA}
+                  onChange={(e) => setAmountA(e.target.value)}
+                />
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  placeholder="Min Amount B Out"
+                  value={minAmountOut}
+                  onChange={(e) => setMinAmountOut(e.target.value)}
+                />
+                <button
+                  className="w-full bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                  onClick={swapAToB}
+                >
+                  Swap A to B
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  placeholder="Amount B to Swap"
+                  value={amountB}
+                  onChange={(e) => setAmountB(e.target.value)}
+                />
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  placeholder="Min Amount A Out"
+                  value={minAmountOut}
+                  onChange={(e) => setMinAmountOut(e.target.value)}
+                />
+                <button
+                  className="w-full bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                  onClick={swapBToA}
+                >
+                  Swap B to A
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
